@@ -13,12 +13,12 @@ ajax.fetch = function (data, responseType) {
     data = { path: data };
 
   if (!data || typeof data != 'object')
-    throw new Error("first argument is not an object or string.");
+    return Promise.reject(new TypeError("first argument is not an object or string."));
 
   path = data.path;
 
-  if (!path)
-    return Promise.reject("path not found");
+  if (typeof path != "string")
+    return Promise.reject(new Error("path not found");
 
   try {
     method = data.method.toUpperCase() || method;
@@ -68,6 +68,14 @@ ajax.fetch = function (data, responseType) {
     http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 
   return new Promise(function(resolve, reject) {
+    function resolveAndCallback (result) {
+      callback(result);
+      resolve(result);
+    }
+    function rejectAndCallback (error) {
+      callback(error);
+      reject(error);
+    }
     http.onreadystatechange = function () {
       if (http.readyState == 4) {
         if (http.status == 200) {
@@ -77,8 +85,7 @@ ajax.fetch = function (data, responseType) {
               try {
                 result = JSON.parse(result);
               } catch (e) {
-                callback(AJAX_RESPONSE_ERROR, 200);
-                reject(AJAX_RESPONSE_ERROR, 200);
+                rejectAndCallback(e);
                 return;
               }
               break;
@@ -93,11 +100,9 @@ ajax.fetch = function (data, responseType) {
             default:
               break;
           }
-          callback(result);
-          resolve(result);
+          resolveAndCallback(result);
         } else {
-          callback(AJAX_RESPONSE_ERROR, http.status);
-          reject(AJAX_RESPONSE_ERROR, http.status);
+          rejectAndCallback(new Error("Response error.\n error code: " + http.status));
         }
       }
     };
