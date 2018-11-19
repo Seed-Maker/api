@@ -1,6 +1,6 @@
 
 const AJAX_RESPONSE_ERROR = "response error";
-var ajax = {};
+let ajax = {};
 
 ajax.fetch = function (data, responseType) {
   let http = new XMLHttpRequest(),
@@ -50,7 +50,7 @@ ajax.fetch = function (data, responseType) {
     param = 0;
   }
 
-  if (!param) param = undefined;
+  param = param || undefined;
 
   switch (typeof data.callback) {
     case 'function':
@@ -64,6 +64,7 @@ ajax.fetch = function (data, responseType) {
   }
 
   http.open(method, path, true);
+
   if (method === 'POST')
     http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 
@@ -102,7 +103,7 @@ ajax.fetch = function (data, responseType) {
           }
           resolveAndCallback(result);
         } else {
-          rejectAndCallback(new Error("Response error.\n error code: " + http.status));
+          rejectAndCallback(new Error("Response error. \n HTTP Status: " + http.status));
         }
       }
     };
@@ -135,7 +136,7 @@ ajax.sendFiles = function (data) {
       callback;
 
   if (!data.path)
-    return Promise.reject("path not found");
+    return Promise.reject(new Error("path not found"));
 
   for (let i = 0; i < files.length; i++)
     formData.append('uploadfile' + i, files[i]);
@@ -160,8 +161,9 @@ ajax.sendFiles = function (data) {
           callback(http.responseText);
           resolve(http.responseText);
         } else {
-          callback(AJAX_RESPONSE_ERROR);
-          reject(http.status);
+          let error =  new Error("Response error. \n HTTP Status: " + http.status);
+          callback(error);
+          reject(error);
         }
       }
     };
