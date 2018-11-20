@@ -18,7 +18,7 @@ ajax.fetch = function (data, responseType) {
   path = data.path;
 
   if (typeof path != "string")
-    return Promise.reject(new Error("path not found");
+    return Promise.reject(new Error("path not found"));
 
   try {
     method = data.method.toUpperCase() || method;
