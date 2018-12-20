@@ -1,24 +1,23 @@
 CanvasRenderingContext2D.prototype.drawImageByPixel = async function (img, ...params) {
-  const QUALITY = 5;
   let tempCanvas = document.createElement('canvas'),
       tempCtx = tempCanvas.getContext('2d'),
       _tempCanvas_ = document.createElement('canvas'),
       _tempCtx_ = _tempCanvas_.getContext('2d'),
       tempImg = new Image;
+  const QUALITY = 5,
+        IW = img.width,
+        IH = img.height;
 
-  _tempCanvas_.width = img.width;
-  _tempCanvas_.height = img.height;
+  _tempCanvas_.width = IW;
+  _tempCanvas_.height = IH;
   _tempCtx_.drawImage(img, 0, 0);
 
   function getPixel(x, y) {
     return _tempCtx_.getImageData(x, y, 1, 1).data;
   }
 
-  tempCanvas.width = img.width * QUALITY;
-  tempCanvas.height = img.height * QUALITY;
-
-  const IW = img.width,
-        IH = img.height;
+  tempCanvas.width = IW * QUALITY;
+  tempCanvas.height = IH * QUALITY;
 
   for (let i = 0; i < IW; i++) {
     for (let k = 0; k < IH; k++) {
